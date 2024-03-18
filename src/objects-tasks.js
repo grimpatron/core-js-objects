@@ -17,8 +17,11 @@
  *    shallowCopy({a: 2, b: { a: [1, 2, 3]}}) => {a: 2, b: { a: [1, 2, 3]}}
  *    shallowCopy({}) => {}
  */
-function shallowCopy(/* obj */) {
-  throw new Error('Not implemented');
+function shallowCopy(obj) {
+  return { ...obj };
+  // return Object.assign(obj);
+  // return Object.fromEntries()
+  // throw new Error('Not implemented');
 }
 
 /**
@@ -32,8 +35,26 @@ function shallowCopy(/* obj */) {
  *    mergeObjects([{a: 1, b: 2}, {b: 3, c: 5}]) => {a: 1, b: 5, c: 5}
  *    mergeObjects([]) => {}
  */
-function mergeObjects(/* objects */) {
-  throw new Error('Not implemented');
+function mergeObjects(objects) {
+  const result = {};
+  // for (const obj of objects) {
+  //   for (const [key, value] of Object.entries(obj)) {
+  //     result[key] = (result[key] || 0) + value;
+  //   }
+  // }
+
+  for (let i = 0; i < objects.length; i += 1) {
+    const obj = objects[i];
+    const keys = Object.keys(obj);
+    for (let j = 0; j < keys.length; j += 1) {
+      const key = keys[j];
+      const value = obj[key];
+      result[key] = (result[key] || 0) + value;
+    }
+  }
+
+  return result;
+  // throw new Error('Not implemented');
 }
 
 /**
@@ -49,8 +70,30 @@ function mergeObjects(/* objects */) {
  *    removeProperties({name: 'John', age: 30, city: 'New York'}, 'age') => {name: 'John', city: 'New York'}
  *
  */
-function removeProperties(/* obj, keys */) {
-  throw new Error('Not implemented');
+function removeProperties(obj, keys) {
+  if (!obj || typeof obj !== 'object') {
+    throw new Error('Invalid input: obj must be a non-null object.');
+  }
+
+  if (!keys) {
+    return obj;
+  }
+
+  // if (typeof keys === 'string') {
+  //   keys = [keys];
+  // }
+
+  const result = { ...obj };
+  // for (const key of keys) {
+  //   delete result[key];
+  // }
+  for (let i = 0; i < keys.length; i += 1) {
+    const key = keys[i];
+    delete result[key];
+  }
+
+  return result;
+  // throw new Error('Not implemented');
 }
 
 /**
@@ -65,8 +108,17 @@ function removeProperties(/* obj, keys */) {
  *    compareObjects({a: 1, b: 2}, {a: 1, b: 2}) => true
  *    compareObjects({a: 1, b: 2}, {a: 1, b: 3}) => false
  */
-function compareObjects(/* obj1, obj2 */) {
-  throw new Error('Not implemented');
+function compareObjects(obj1, obj2) {
+  // if (obj1 === obj2) return true;
+  // const keys1 = Object.keys(obj1);
+  // const keys2 = Object.keys(obj2);
+
+  const o1 = JSON.stringify(obj1);
+  const o2 = JSON.stringify(obj2);
+  if (o1 === o2) return true;
+  return false;
+
+  // throw new Error('Not implemented');
 }
 
 /**
@@ -80,8 +132,13 @@ function compareObjects(/* obj1, obj2 */) {
  *    isEmptyObject({}) => true
  *    isEmptyObject({a: 1}) => false
  */
-function isEmptyObject(/* obj */) {
-  throw new Error('Not implemented');
+function isEmptyObject(obj) {
+  const keys = Object.keys(obj);
+  return keys.length === 0;
+
+  // const stringObj = JSON.stringify(obj);
+  // if (stringObj === '{}') return true;
+  // return false;
 }
 
 /**
@@ -100,8 +157,9 @@ function isEmptyObject(/* obj */) {
  *    immutableObj.newProp = 'new';
  *    console.log(immutableObj) => {a: 1, b: 2}
  */
-function makeImmutable(/* obj */) {
-  throw new Error('Not implemented');
+function makeImmutable(obj) {
+  return Object.freeze({ ...obj });
+  // throw new Error('Not implemented');
 }
 
 /**
@@ -114,8 +172,18 @@ function makeImmutable(/* obj */) {
  *    makeWord({ a: [0, 1], b: [2, 3], c: [4, 5] }) => 'aabbcc'
  *    makeWord({ H:[0], e: [1], l: [2, 3, 8], o: [4, 6], W:[5], r:[7], d:[9]}) => 'HelloWorld'
  */
-function makeWord(/* lettersObject */) {
-  throw new Error('Not implemented');
+function makeWord(lettersObject) {
+  const word = [];
+  const keys = Object.keys(lettersObject);
+  for (let i = 0; i < keys.length; i += 1) {
+    const letter = keys[i];
+    for (let j = 0; j < lettersObject[letter].length; j += 1) {
+      word[lettersObject[letter][j]] = letter;
+    }
+  }
+
+  return word.join('');
+  // throw new Error('Not implemented');
 }
 
 /**
@@ -132,8 +200,32 @@ function makeWord(/* lettersObject */) {
  *    sellTickets([25, 25, 50]) => true
  *    sellTickets([25, 100]) => false (The seller does not have enough money to give change.)
  */
-function sellTickets(/* queue */) {
-  throw new Error('Not implemented');
+function sellTickets(queue) {
+  let twentyFiveCount = 0;
+  let fiftyCount = 0;
+
+  for (let i = 0; i < queue.length; i += 1) {
+    if (queue[i] === 25) {
+      twentyFiveCount += 1;
+    } else if (queue[i] === 50) {
+      if (twentyFiveCount > 0) {
+        twentyFiveCount -= 1;
+        fiftyCount += 1;
+      } else {
+        return false;
+      }
+    } else if (queue[i] === 100) {
+      if (fiftyCount > 0 && twentyFiveCount > 0) {
+        fiftyCount -= 1;
+        twentyFiveCount -= 1;
+      } else if (twentyFiveCount >= 3) {
+        twentyFiveCount -= 3;
+      } else {
+        return false;
+      }
+    }
+  }
+  return true;
 }
 
 /**
@@ -149,9 +241,24 @@ function sellTickets(/* queue */) {
  *    console.log(r.height);      // => 20
  *    console.log(r.getArea());   // => 200
  */
-function Rectangle(/* width, height */) {
-  throw new Error('Not implemented');
+class Rectangle {
+  constructor(width, height) {
+    this.width = width;
+    this.height = height;
+  }
+
+  getArea() {
+    return this.width * this.height;
+  }
 }
+
+// function Rectangle(height, width) {
+//   this.height = height;
+//   this.width = width;
+//   this.getArea = function () {
+//     return this.height * this.width;
+//   };
+// }
 
 /**
  * Returns the JSON representation of specified object
@@ -163,8 +270,10 @@ function Rectangle(/* width, height */) {
  *    [1,2,3]   =>  '[1,2,3]'
  *    { width: 10, height : 20 } => '{"height":10,"width":20}'
  */
-function getJSON(/* obj */) {
-  throw new Error('Not implemented');
+function getJSON(obj) {
+  const result = JSON.stringify(obj);
+  return result;
+  // throw new Error('Not implemented');
 }
 
 /**
@@ -178,8 +287,12 @@ function getJSON(/* obj */) {
  *    const r = fromJSON(Circle.prototype, '{"radius":10}');
  *
  */
-function fromJSON(/* proto, json */) {
-  throw new Error('Not implemented');
+function fromJSON(proto, json) {
+  const parsedData = JSON.parse(json);
+  const obj = Object.create(proto);
+  Object.assign(obj, parsedData);
+  return obj;
+  // throw new Error('Not implemented');
 }
 
 /**
@@ -208,8 +321,10 @@ function fromJSON(/* proto, json */) {
  *      { country: 'Russia',  city: 'Saint Petersburg' }
  *    ]
  */
-function sortCitiesArray(/* arr */) {
-  throw new Error('Not implemented');
+function sortCitiesArray(arr) {
+  const newArr = arr.sort((a, b) => (a.city < b.city ? 1 : -1));
+  const result = newArr.sort((a, b) => (a.country > b.country ? 1 : -1));
+  return result;
 }
 
 /**
@@ -242,8 +357,14 @@ function sortCitiesArray(/* arr */) {
  *    "Poland" => ["Lodz"]
  *   }
  */
-function group(/* array, keySelector, valueSelector */) {
-  throw new Error('Not implemented');
+function group(array, keySelector, valueSelector) {
+  return array.reduce((map, item) => {
+    const keyS = keySelector(item);
+    const valueS = valueSelector(item);
+    if (!map.has(keyS)) map.set(keyS, []);
+    map.get(keyS).push(valueS);
+    return map;
+  }, new Map());
 }
 
 /**
@@ -301,32 +422,42 @@ function group(/* array, keySelector, valueSelector */) {
  */
 
 const cssSelectorBuilder = {
-  element(/* value */) {
-    throw new Error('Not implemented');
+  selector: '',
+  element(value) {
+    this.selector += `${value}`;
+    return this;
   },
 
-  id(/* value */) {
-    throw new Error('Not implemented');
+  id(value) {
+    this.selector += `#${value}`;
+    return this;
+  },
+  class(value) {
+    this.selector += `.${value}`;
+    return this;
   },
 
-  class(/* value */) {
-    throw new Error('Not implemented');
+  attr(value) {
+    this.selector += `[${value}]`;
+    return this;
+  },
+  pseudoClass(value) {
+    this.selector += `:${value}`;
+    return this;
   },
 
-  attr(/* value */) {
-    throw new Error('Not implemented');
+  pseudoElement(value) {
+    this.selector += `::${value}`;
+    return this;
   },
-
-  pseudoClass(/* value */) {
-    throw new Error('Not implemented');
+  combine(selector1, combinator, selector2) {
+    this.selector = `${selector1.stringify()} ${combinator} ${selector2.stringify()}`;
+    return this;
   },
-
-  pseudoElement(/* value */) {
-    throw new Error('Not implemented');
-  },
-
-  combine(/* selector1, combinator, selector2 */) {
-    throw new Error('Not implemented');
+  stringify() {
+    const result = this.selector;
+    this.selector = '';
+    return result;
   },
 };
 
